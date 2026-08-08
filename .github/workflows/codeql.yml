@@ -48,7 +48,6 @@ jobs:
           channel: stable
           flutter-version: "3.44.8"
           cache: true
-          pub-cache: true
 
       - name: Restore locked dependencies
         run: flutter pub get --enforce-lockfile
@@ -65,7 +64,15 @@ jobs:
 
       - name: Build macOS for CodeQL
         if: matrix.language == 'swift'
-        run: flutter build macos --debug --no-pub
+        run: |
+          flutter build macos --config-only --no-pub
+          xcodebuild -quiet \
+            -workspace macos/Runner.xcworkspace \
+            -scheme Runner \
+            -configuration Debug \
+            -sdk macosx \
+            CODE_SIGNING_ALLOWED=NO \
+            clean build
 
       - name: Analyze
         uses: github/codeql-action/analyze@5595ccaf912efad79be6eef63a5619ff05969be3 # v4

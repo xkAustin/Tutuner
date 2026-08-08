@@ -1,0 +1,31 @@
+name: tutuner
+description: Offline cross-platform guitar tuner and precision metronome.
+publish_to: none
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.11.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  audio_session: ^0.2.4
+  flutter_soloud: ^4.0.13
+  provider: ^6.1.5+1
+  record: ^7.1.1
+  shared_preferences: ^2.5.5
+  wakelock_plus: ^1.7.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+  generate: true
+  assets:
+    - assets/audio/
+    - assets/tunings/

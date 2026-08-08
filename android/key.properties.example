@@ -1,0 +1,5 @@
+# Copy this file to android/key.properties. Never commit the real file or keystore.
+storeFile=/absolute/path/to/tutuner-release.jks
+storePassword=replace-with-secret
+keyAlias=tutuner
+keyPassword=replace-with-secret

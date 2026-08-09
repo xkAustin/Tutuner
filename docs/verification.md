@@ -13,7 +13,7 @@
 
 - `dart format lib test`
 - `flutter analyze`：通过，0 个问题
-- `flutter test --no-pub`：27 项通过
+- `flutter test --no-pub`：29 项通过
   - YIN 合成采样：82.4069、110、196、329.6276、880、1396.91 Hz
   - 静音噪声门
   - 平滑与八度跳变抑制
@@ -21,6 +21,8 @@
   - 固定锚点 10,000 事件时间线与恢复跳拍
   - Tap Tempo 异常间隔、误双击过滤及超时重开序列
   - 暂停保留拍位、继续接下一拍、停止复位
+  - 节拍器拍号、细分、逐拍重音、声音与视觉开关可恢复并同步到控制器
+  - 节拍器配置写入异步偏好后可由新的设置实例完整恢复
   - 琴弦最近目标选择、连续帧确认与相邻弦边界防抖
   - 停止请求作废延迟中的麦克风启动
   - 快速停止/重启严格等待前一录音会话结束
@@ -38,7 +40,7 @@
 - `flutter build apk --release --no-pub`（无签名配置负向测试）：按预期失败
   - 明确缺少 `storeFile`、`storePassword`、`keyAlias`、`keyPassword`
   - 未回退到 Android Debug 签名
-- 依赖复检：81 个 Pub 包与 89 个 Android Maven 坐标经 OSV 查询无命中
+- 依赖复检：82 个 Pub 包与 89 个 Android Maven 坐标经 OSV 查询无命中
 - macOS 实际启动：通过
   - 麦克风 PCM 输入产生实时频率、目标音和 cents 读数
   - 调音器、节拍器、设置与调弦库统一 Liquid Glass 界面正常渲染

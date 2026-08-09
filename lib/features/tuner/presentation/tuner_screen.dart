@@ -1,3 +1,5 @@
+import 'package:app_settings/app_settings.dart' as system_settings;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tutuner/app/localization/app_strings.dart';
@@ -141,34 +143,87 @@ class _InputIssueCard extends StatelessWidget {
       child: GlassPanel(
         tint: Theme.of(context).colorScheme.errorContainer,
         padding: const EdgeInsets.all(16),
-        child: Row(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            Icon(isPermission ? Icons.mic_off_outlined : Icons.info_outline),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                isPermission
-                    ? strings.text(
-                        'Tutuner 需要麦克风权限来分析音高。请允许权限后重试；若系统已永久拒绝，请在系统设置中为 Tutuner 开启麦克风。',
-                        'Tutuner needs microphone access to analyze pitch. Allow it and retry. If access was permanently denied, enable the microphone for Tutuner in system settings.',
-                      )
-                    : controller.errorMessage ??
-                          strings.text(
-                            '音频输入已中断，请检查设备后重新开始。',
-                            'Audio input was interrupted. Check the device and restart.',
-                          ),
-              ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Icon(
+                  isPermission ? Icons.mic_off_outlined : Icons.info_outline,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    isPermission
+                        ? strings.text(
+                            'Tutuner 需要麦克风权限来分析音高。请允许权限后重试；若系统已永久拒绝，请在系统设置中为 Tutuner 开启麦克风。',
+                            'Tutuner needs microphone access to analyze pitch. Allow it and retry. If access was permanently denied, enable the microphone for Tutuner in system settings.',
+                          )
+                        : controller.errorMessage ??
+                              strings.text(
+                                '音频输入已中断，请检查设备后重新开始。',
+                                'Audio input was interrupted. Check the device and restart.',
+                              ),
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(width: 8),
-            FilledButton.tonalIcon(
-              onPressed: controller.start,
-              icon: const Icon(Icons.refresh_rounded),
-              label: Text(strings.text('重试', 'Retry')),
+            const SizedBox(height: 12),
+            Align(
+              alignment: AlignmentDirectional.centerEnd,
+              child: Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: <Widget>[
+                  if (isPermission && _supportsAppSettings)
+                    OutlinedButton.icon(
+                      onPressed: () => _openAppSettings(context),
+                      icon: const Icon(Icons.settings_outlined),
+                      label: Text(strings.text('打开系统设置', 'Open settings')),
+                    ),
+                  FilledButton.tonalIcon(
+                    onPressed: controller.start,
+                    icon: const Icon(Icons.refresh_rounded),
+                    label: Text(strings.text('重试', 'Retry')),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
       ),
     );
+  }
+
+  bool get _supportsAppSettings =>
+      !kIsWeb &&
+      switch (defaultTargetPlatform) {
+        TargetPlatform.android ||
+        TargetPlatform.iOS ||
+        TargetPlatform.macOS => true,
+        _ => false,
+      };
+
+  Future<void> _openAppSettings(BuildContext context) async {
+    final strings = AppStrings.of(context);
+    try {
+      await system_settings.AppSettings.openAppSettings();
+    } on Object {
+      if (!context.mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            strings.text(
+              '无法自动打开系统设置，请手动为 Tutuner 开启麦克风权限。',
+              'Could not open system settings. Enable microphone access for Tutuner manually.',
+            ),
+          ),
+        ),
+      );
+    }
   }
 }
 

@@ -17,6 +17,11 @@ class MetronomeController extends ChangeNotifier {
        _audioOutput = audioOutput ?? SoloudAudioOutputService() {
     _clock.start();
     bpm = settings.bpm;
+    timeSignature = settings.metronomeTimeSignature;
+    subdivision = settings.metronomeSubdivision;
+    accents = List<BeatAccent>.of(settings.metronomeAccents);
+    soundEnabled = settings.metronomeSoundEnabled;
+    visualEnabled = settings.metronomeVisualEnabled;
   }
 
   final AppSettings _settings;
@@ -29,18 +34,13 @@ class MetronomeController extends ChangeNotifier {
   bool _wakeLockActive = false;
 
   late int bpm;
-  TimeSignature timeSignature = const TimeSignature(4, 4);
-  Subdivision subdivision = Subdivision.quarter;
-  List<BeatAccent> accents = <BeatAccent>[
-    BeatAccent.accent,
-    BeatAccent.normal,
-    BeatAccent.normal,
-    BeatAccent.normal,
-  ];
+  late TimeSignature timeSignature;
+  late Subdivision subdivision;
+  late List<BeatAccent> accents;
   bool isPlaying = false;
   bool isPaused = false;
-  bool soundEnabled = true;
-  bool visualEnabled = true;
+  late bool soundEnabled;
+  late bool visualEnabled;
   int activeBeat = -1;
   int activeSubdivision = -1;
   int tapCount = 0;
@@ -142,34 +142,36 @@ class MetronomeController extends ChangeNotifier {
   }
 
   Future<void> setTimeSignature(TimeSignature value) async {
-    timeSignature = value;
-    accents = List<BeatAccent>.generate(
-      value.numerator,
-      (index) => index == 0 ? BeatAccent.accent : BeatAccent.normal,
-    );
+    await _settings.setMetronomeTimeSignature(value);
+    timeSignature = _settings.metronomeTimeSignature;
+    accents = List<BeatAccent>.of(_settings.metronomeAccents);
     await _restartAtBoundaryIfPlaying();
     notifyListeners();
   }
 
   Future<void> setSubdivision(Subdivision value) async {
-    subdivision = value;
+    await _settings.setMetronomeSubdivision(value);
+    subdivision = _settings.metronomeSubdivision;
     await _restartAtBoundaryIfPlaying();
     notifyListeners();
   }
 
-  void setAccent(int beat, BeatAccent value) {
-    accents[beat] = value;
-    unawaited(_restartAtBoundaryIfPlaying());
+  Future<void> setAccent(int beat, BeatAccent value) async {
+    accents = List<BeatAccent>.of(accents)..[beat] = value;
+    await _settings.setMetronomeAccents(accents);
+    await _restartAtBoundaryIfPlaying();
     notifyListeners();
   }
 
-  void setSoundEnabled(bool value) {
-    soundEnabled = value;
+  Future<void> setSoundEnabled(bool value) async {
+    await _settings.setMetronomeSoundEnabled(value);
+    soundEnabled = _settings.metronomeSoundEnabled;
     notifyListeners();
   }
 
-  void setVisualEnabled(bool value) {
-    visualEnabled = value;
+  Future<void> setVisualEnabled(bool value) async {
+    await _settings.setMetronomeVisualEnabled(value);
+    visualEnabled = _settings.metronomeVisualEnabled;
     notifyListeners();
   }
 

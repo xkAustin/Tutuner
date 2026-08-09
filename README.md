@@ -8,6 +8,7 @@ Tutuner 是一款完全离线、无账号、无广告的跨平台吉他调音器
 - 独立 Isolate 中运行的 YIN 基频检测，覆盖 60–1400 Hz
 - RMS 噪声门、置信度过滤、中值/指数平滑、异常与八度跳变抑制
 - A4 430–450 Hz 动态参考音高
+- 稳定、平衡、灵敏三档调音置信度策略
 - 正确的 24 平均律自由调音（每音级 50 cents）
 - 标准调弦、14 套内置特殊调弦、带迟滞防抖的自动识弦与琴颈图手动锁弦
 - 调弦搜索、收藏、自定义、编辑、删除和本地持久化
@@ -47,6 +48,10 @@ Android 构建使用 JDK 17。首次运行调音器时，系统会请求麦克�
 - [安全与隐私架构](docs/security.md)
 - [安全审计记录](docs/security-audit-2026-08-08.md)
 - [验证记录](docs/verification.md)
+- [品牌资源](docs/branding.md)
+- [商店发布文案](docs/store-listing.md)
+- [发布检查清单](docs/release-checklist.md)
+- [隐私说明](PRIVACY.md)
 - [漏洞报告与安全策略](SECURITY.md)
 
 ## 隐私

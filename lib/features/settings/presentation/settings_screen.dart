@@ -56,6 +56,34 @@ class SettingsScreen extends StatelessWidget {
                       ),
                       ListTile(
                         contentPadding: EdgeInsets.zero,
+                        title: Text(strings.text('调音灵敏度', 'Tuner sensitivity')),
+                        subtitle: Text(
+                          strings.text(
+                            '灵敏模式响应更多弱信号；稳定模式使用更严格的置信度门限',
+                            'Sensitive responds to more weak signals; Stable uses a stricter confidence threshold',
+                          ),
+                        ),
+                        trailing: GlassDropdown<TunerSensitivity>(
+                          value: settings.tunerSensitivity,
+                          items: TunerSensitivity.values
+                              .map(
+                                (value) => DropdownMenuItem<TunerSensitivity>(
+                                  value: value,
+                                  child: Text(
+                                    _sensitivityLabel(strings, value),
+                                  ),
+                                ),
+                              )
+                              .toList(),
+                          onChanged: (value) {
+                            if (value != null) {
+                              settings.setTunerSensitivity(value);
+                            }
+                          },
+                        ),
+                      ),
+                      ListTile(
+                        contentPadding: EdgeInsets.zero,
                         title: Text(strings.text('音名显示', 'Note spelling')),
                         trailing: GlassDropdown<NoteSpelling>(
                           value: settings.noteSpelling,
@@ -248,6 +276,14 @@ class SettingsScreen extends StatelessWidget {
       MetronomeSoundPack.classic => strings.text('经典', 'Classic'),
       MetronomeSoundPack.wood => strings.text('木质', 'Wood'),
       MetronomeSoundPack.digital => strings.text('电子', 'Digital'),
+    };
+  }
+
+  String _sensitivityLabel(AppStrings strings, TunerSensitivity sensitivity) {
+    return switch (sensitivity) {
+      TunerSensitivity.stable => strings.text('稳定', 'Stable'),
+      TunerSensitivity.balanced => strings.text('平衡', 'Balanced'),
+      TunerSensitivity.sensitive => strings.text('灵敏', 'Sensitive'),
     };
   }
 

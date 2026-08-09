@@ -28,6 +28,7 @@ void main() {
     ]);
     await settings.setMetronomeSoundEnabled(false);
     await settings.setMetronomeVisualEnabled(false);
+    await settings.setTunerSensitivity(TunerSensitivity.sensitive);
 
     final restored = AppSettings(preferences: SharedPreferencesAsync());
     await restored.load();
@@ -41,5 +42,7 @@ void main() {
     ]);
     expect(restored.metronomeSoundEnabled, isFalse);
     expect(restored.metronomeVisualEnabled, isFalse);
+    expect(restored.tunerSensitivity, TunerSensitivity.sensitive);
+    expect(restored.minimumPitchConfidence, 0.58);
   });
 }

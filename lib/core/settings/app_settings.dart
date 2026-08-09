@@ -5,6 +5,8 @@ import 'package:tutuner/core/metronome/beat_scheduler.dart';
 import 'package:tutuner/core/metronome/time_signature.dart';
 import 'package:tutuner/core/music/note.dart';
 
+enum TunerSensitivity { stable, balanced, sensitive }
+
 class AppSettings extends ChangeNotifier {
   AppSettings({SharedPreferencesAsync? preferences})
     : _preferences = preferences ?? SharedPreferencesAsync();
@@ -16,6 +18,7 @@ class AppSettings extends ChangeNotifier {
   double referencePitch = 440;
   double inputThreshold = 0.008;
   double inTuneCents = 3;
+  TunerSensitivity tunerSensitivity = TunerSensitivity.balanced;
   double metronomeVolume = 0.8;
   int bpm = 120;
   ThemeMode themeMode = ThemeMode.system;
@@ -33,6 +36,12 @@ class AppSettings extends ChangeNotifier {
 
   Locale? get locale => languageMode == 'system' ? null : Locale(languageMode);
 
+  double get minimumPitchConfidence => switch (tunerSensitivity) {
+    TunerSensitivity.stable => 0.82,
+    TunerSensitivity.balanced => 0.70,
+    TunerSensitivity.sensitive => 0.58,
+  };
+
   Future<void> load() async {
     final preferences = _preferences;
     if (preferences == null) {
@@ -43,6 +52,11 @@ class AppSettings extends ChangeNotifier {
     referencePitch = await preferences.getDouble('reference_pitch') ?? 440;
     inputThreshold = await preferences.getDouble('input_threshold') ?? 0.008;
     inTuneCents = await preferences.getDouble('in_tune_cents') ?? 3;
+    tunerSensitivity = _enumByNameOr(
+      TunerSensitivity.values,
+      await preferences.getString('tuner_sensitivity'),
+      TunerSensitivity.balanced,
+    );
     metronomeVolume = await preferences.getDouble('metronome_volume') ?? 0.8;
     bpm = await preferences.getInt('bpm') ?? 120;
     themeMode = ThemeMode.values.byName(
@@ -108,6 +122,12 @@ class AppSettings extends ChangeNotifier {
   Future<void> setInTuneCents(double value) async {
     inTuneCents = value.clamp(1, 10);
     await _preferences?.setDouble('in_tune_cents', inTuneCents);
+    notifyListeners();
+  }
+
+  Future<void> setTunerSensitivity(TunerSensitivity value) async {
+    tunerSensitivity = value;
+    await _preferences?.setString('tuner_sensitivity', value.name);
     notifyListeners();
   }
 
@@ -225,6 +245,7 @@ class AppSettings extends ChangeNotifier {
         'reference_pitch',
         'input_threshold',
         'in_tune_cents',
+        'tuner_sensitivity',
         'metronome_volume',
         'bpm',
         'theme_mode',
@@ -245,6 +266,7 @@ class AppSettings extends ChangeNotifier {
     referencePitch = 440;
     inputThreshold = 0.008;
     inTuneCents = 3;
+    tunerSensitivity = TunerSensitivity.balanced;
     metronomeVolume = 0.8;
     bpm = 120;
     themeMode = ThemeMode.system;

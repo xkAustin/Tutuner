@@ -55,16 +55,19 @@ class _AnalysisRequest {
     required this.samples,
     required this.sampleRate,
     required this.rmsThreshold,
+    required this.minimumConfidence,
   });
 
   final Float64List samples;
   final int sampleRate;
   final double rmsThreshold;
+  final double minimumConfidence;
 }
 
 PitchEstimate? _analyzeFrame(_AnalysisRequest request) {
   return YinPitchDetector(
     noiseGate: NoiseGate(rmsThreshold: request.rmsThreshold),
+    minimumConfidence: request.minimumConfidence,
   ).detect(request.samples, request.sampleRate);
 }
 
@@ -280,6 +283,7 @@ class TunerController extends ChangeNotifier {
             samples: frame,
             sampleRate: _audioInput.sampleRate,
             rmsThreshold: _settings.inputThreshold,
+            minimumConfidence: _settings.minimumPitchConfidence,
           ),
         );
         if (!_isCurrentCapture(generation)) {
